@@ -1,1 +1,1 @@
-bin_SCRIPTS = cross-configure-ios
+bin_SCRIPTS = cross-ios
