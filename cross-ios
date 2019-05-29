@@ -1,0 +1,45 @@
+#!/bin/sh
+set -e
+if [ $# -lt 1 ]; then
+  echo "$0 i386|x86_64|armv7s|arm64 [command [args...]]" 1>&2
+  exit 1
+fi
+PKG_ARCH=$1
+shift
+MINIOSVERSION="9.0"
+if [ "$PKG_ARCH" = "armv7s" -o "$PKG_ARCH" = "arm64" ]; then
+  PKG_CONFIGUREFLAGS="--host=arm-apple-darwin --target=arm-apple-darwin"
+  MINVERSION="-miphoneos-version-min=$MINIOSVERSION"
+  if [ "$PKG_ARCH" = "armv7s" ]; then
+    # See measurement-kit/measurement-kit#1404
+    # TODO(bassosimone): This should be in `./measurement-kit`
+    EXTRA_CPPFLAGS="-DMK_NO_THREAD_LOCAL"
+  fi
+  PLATFORM=iphoneos
+elif [ "$PKG_ARCH" = "i386" ]; then
+  PKG_CONFIGUREFLAGS="--host=i386-apple-darwin --target=i386-apple-darwin"
+  MINVERSION="-mios-simulator-version-min=$MINIOSVERSION"
+  EXTRA_CPPFLAGS="-DMK_NO_THREAD_LOCAL"
+  PLATFORM=iphonesimulator
+elif [ "$PKG_ARCH" = "x86_64" ]; then
+  PKG_CONFIGUREFLAGS="--host=x86_64-apple-darwin --target=x86_64-apple-darwin"
+  MINVERSION="-mios-simulator-version-min=$MINIOSVERSION"
+  PLATFORM=iphonesimulator
+else
+  echo "$0: unsupported architecture: $PKG_ARCH" 1>&2
+  exit 1
+fi
+export CC="$(xcrun -find -sdk ${PLATFORM} cc)"
+export CXX="$(xcrun -find -sdk ${PLATFORM} g++)"
+export CPPFLAGS="-arch ${PKG_ARCH} -isysroot $(xcrun -sdk ${PLATFORM} --show-sdk-path) $EXTRA_CPPFLAGS $CPPFLAGS"
+export CFLAGS="-O2 -arch ${PKG_ARCH} $MINVERSION -isysroot $(xcrun -sdk ${PLATFORM} --show-sdk-path) $CFLAGS"
+export CXXFLAGS="-O2 -arch ${PKG_ARCH} $MINVERSION -isysroot $(xcrun -sdk ${PLATFORM} --show-sdk-path) $CXXFLAGS"
+export LDFLAGS="-arch ${PKG_ARCH} $MINVERSION -isysroot $(xcrun -sdk ${PLATFORM} --show-sdk-path) $LDFLAGS"
+export PKG_CONFIGUREFLAGS
+export PKG_OS="ios"
+export PKG_ARCH
+if [ $# -gt 0 ]; then
+  $@
+else
+  env
+fi

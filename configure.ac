@@ -1,0 +1,6 @@
+AC_INIT([cross], [0.1.0])
+AC_CONFIG_SRCDIR([cross-ios])
+AM_INIT_AUTOMAKE([foreign])
+AC_PROG_INSTALL
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
