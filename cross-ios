@@ -41,11 +41,12 @@ fi
 
 isysroot="-isysroot `xcrun -sdk $platform --show-sdk-path`"
 
+set -x
 export CC="`xcrun -find -sdk $platform cc`"
 export CXX="`xcrun -find -sdk $platform g++`"
 export CPPFLAGS="-arch $architecture $isysroot $extra_cppflags $CPPFLAGS"
-export CFLAGS="-O2 -arch $architecture $isysroot $minversion_flag $CFLAGS"
-export CXXFLAGS="-O2 -arch $architecture $isysroot $minversion $CXXFLAGS"
-export LDFLAGS="-arch $architecture $minversion $isysroot $LDFLAGS"
+export CFLAGS="-O2 -arch $architecture $minversion_flag $CFLAGS"
+export CXXFLAGS="-O2 -arch $architecture $minversion_flag $CXXFLAGS"
+export LDFLAGS="-arch $architecture $minversion_flag $isysroot $LDFLAGS"
 
 $@ $configureflags
