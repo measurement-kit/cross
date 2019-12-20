@@ -1,1 +1,1 @@
-bin_SCRIPTS = cross-android cross-ios
+bin_SCRIPTS = cross-android cross-ios cross-mingw

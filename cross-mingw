@@ -1,0 +1,32 @@
+#!/bin/sh
+set -e
+
+if [ $# -lt 1 ]; then
+  echo "$0 x86_64 [.../]configure [args...]" 1>&2
+  exit 1
+fi
+
+architecture=$1
+shift
+
+if [ "$architecture" != "x86_64" ]; then
+  echo "$0: unsupported architecture: $architecture" 1>&2
+  exit 1
+fi
+configureflags="--host=x86_64-w64-mingw32"
+
+set -x
+export AR="x86_64-w64-mingw32-ar"
+export AS="x86_64-w64-mingw32-as"
+export CC="x86_64-w64-mingw32-gcc"
+export CFLAGS="-Wall -O2"
+export CPP="x86_64-w64-mingw32-cpp"
+export CXX="x86_64-w64-mingw32-g++"
+export CXXFLAGS="-Wall -O2"
+export LD="x86_64-w64-mingw32-ld"
+export NM="x86_64-w64-mingw32-nm"
+export PATH="/usr/local/bin:/usr/bin:/bin"
+export RANLIB="x86_64-w64-mingw32-ranlib"
+export STRIP="x86_64-w64-mingw32-strip"
+
+$@ $configureflags
